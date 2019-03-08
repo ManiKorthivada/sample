@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
 import java.util.*;
 
@@ -30,7 +32,7 @@ import java.util.*;
  * @author Active Health Management
  */
 @Model(
-        adaptables = {Resource.class},
+        adaptables = {SlingHttpServletRequest.class},
         adapters = { VideoModel.class, ComponentExporter.class},
         resourceType = {"/apps/ahm/components/content/video"},
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
@@ -38,17 +40,14 @@ import java.util.*;
 @Exporter(
         name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
         selector = AHMJsonServiceConstants.SLING_MODEL_EXPORTER_SELECTOR,
-        extensions = ExporterConstants.SLING_MODEL_EXTENSION,
-        options = {
-                @ExporterOption(name = "SerializationFeature.WRAP_ROOT_VALUE", value="true")
-        }
+        extensions = ExporterConstants.SLING_MODEL_EXTENSION
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "Video")
+@JsonRootName(value = "video")
 
 public class VideoModel implements ComponentExporter {
 
-    @Inject
+    @ValueMapValue
     @JsonProperty("videoPath")
     private String videoPath;
 
@@ -58,10 +57,8 @@ public class VideoModel implements ComponentExporter {
     @SlingObject
     private ResourceResolver resourceResolver;
 
-    @Inject
     String title;
 
-    @Inject
     String decription;
 
     @PostConstruct
@@ -103,9 +100,8 @@ public class VideoModel implements ComponentExporter {
     }
 
     @Override
-    @JsonIgnore
     public String getExportedType() {
         // TODO Auto-generated method stub
-        return null;
+        return "ahm/components/content/video";
     }
 }

@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import com.aetna.ahm.core.HierarchyPage;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -58,6 +59,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Model(adaptables = SlingHttpServletRequest.class, adapters = {ContainerExporter.class}, resourceType = HierarchyPageImpl.RESOURCE_TYPE)
 @Exporter(name = ExporterConstants.SLING_MODEL_EXPORTER_NAME, extensions = ExporterConstants.SLING_MODEL_EXTENSION)
+@JsonRootName(value = "prepost")
 public class HierarchyPageImpl implements HierarchyPage {
 
     /**
