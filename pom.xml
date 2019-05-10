@@ -448,6 +448,24 @@
     <!-- ====================================================================== -->
     <dependencyManagement>
 		<dependencies>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>1.10.19</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>1.6.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>1.6.4</version>
+                <scope>test</scope>
+            </dependency>
 			<!-- OSGi Dependencies -->
 			<dependency>
 				<groupId>org.osgi</groupId>
@@ -531,32 +549,44 @@
 				<scope>provided</scope>
 			</dependency>
 			<!-- Testing -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<version>1.5.11</version>
-				<scope>test</scope>
-			</dependency>
-			
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>2.7.22</version>
-				<scope>test</scope>
-			</dependency>
-		 
-			<dependency>
-				<groupId>junit-addons</groupId>
-				<artifactId>junit-addons</artifactId>
-				<version>1.4</version>
-				<scope>test</scope>
-			</dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.25</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>1.8.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit-addons</groupId>
+                <artifactId>junit-addons</artifactId>
+                <version>1.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
+                <version>2.3.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>uk.org.lidalia</groupId>
+                <artifactId>slf4j-test</artifactId>
+                <version>1.0.1</version>
+                <scope>test</scope>
+            </dependency>
 			<dependency>
 		        <groupId>com.adobe.cq.sightly</groupId>
 		        <artifactId>cq-wcm-sightly-extension</artifactId>
