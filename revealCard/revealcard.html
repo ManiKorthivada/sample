@@ -1,0 +1,36 @@
+<sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html" data-sly-call="${clientLib.css @ categories='ahm.global'}" data-sly-unwrap/>
+<sly data-sly-use.revealCard="com.aetna.ahm.core.models.qr.RevealCardModel" />
+<div class="components-container">
+	<div class="component-title">
+		<h1>Reveal Card</h1>
+	</div>
+	<div class="card-seperator"></div>
+	<ul class="multiple-comp">
+	<li>
+		<div class="component-panel">
+			<div class="panel-front">
+				<div class="card-note">
+					<div class="inner-note">Click on the card component and use the <img class="img-prop" src="${properties.cardImagePath}"/> icon to configure properties</div>
+				</div>
+				<div class="panel-details">
+					<div class="pull-left">
+						<p class="card-label">card front</p>
+						<p class="detail-name">${revealCard.imageName}</p>
+					</div>
+					<span class="numbering">${properties.sortOrder}</span>
+				</div>
+			</div>
+			<div class="panel-back">
+				<div class="panel-content">
+					<h5>${properties.cardTitle}</h5>
+					<p>${properties.cardMessage}</p>
+				</div>
+				<div class="panel-details">
+					<span class="card-label">card back</span>
+					<span class="numbering">${properties.sortOrder}</span>
+				</div>
+			</div>
+		</div>
+	</li>
+	</ul>
+</div>
