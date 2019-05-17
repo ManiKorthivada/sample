@@ -36,6 +36,9 @@ public class GridModel {
     @PostConstruct
     public void init() throws Exception {
         Resource resource = request.getResource();
+        if("ahm/components/structure/xfpagewidget".equalsIgnoreCase(resource.getResourceType())){
+            resource = resource.getChild("root");
+        }
         Iterator<Resource> iterator = resource.listChildren();
         while (iterator.hasNext()){
             Resource componentResource = iterator.next();
