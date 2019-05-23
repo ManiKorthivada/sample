@@ -33,7 +33,7 @@ import java.util.*;
  */
 @Model(
         adaptables = {SlingHttpServletRequest.class},
-        adapters = { VideoModel.class, ComponentExporter.class},
+        adapters = {VideoModel.class, ComponentExporter.class},
         resourceType = {"/apps/ahm/components/content/video"},
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
@@ -59,45 +59,17 @@ public class VideoModel implements ComponentExporter {
 
     String title;
 
-    String decription;
-
     @PostConstruct
     public void invokepost() {
         imageResource = resourceResolver.getResource(videoPath);
-        Resource metadataResource = imageResource.getChild("jcr:content/metadata");
-        if (metadataResource != null) {
-            metadataValueMap = metadataResource.getValueMap();
-        }
-    }
 
-    public String getDescription() {
-        if (null != metadataValueMap) {
-            decription = metadataValueMap.get("dc:description", String.class);
-        }
-        return decription;
     }
 
     public String getTitle() {
-        if (null != metadataValueMap) {
-            title = metadataValueMap.get("dc:title", String.class);
-        }
+        title = imageResource.getName();
         return title;
     }
 
-    public List<Map<String, String>> getRenditions() {
-        Resource rendtionResource = imageResource.getChild("jcr:content/renditions");
-        List<Map<String, String>> list = new ArrayList<>();
-        if (rendtionResource != null) {
-            Iterator<Resource> iterator = rendtionResource.listChildren();
-            Map map = new HashMap();
-            while (iterator.hasNext()){
-                Resource eachImageResource = iterator.next();
-                map.put(eachImageResource.getName(), eachImageResource.getPath());
-            }
-            list.add(map);
-        }
-        return list;
-    }
 
     @Override
     public String getExportedType() {
