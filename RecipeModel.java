@@ -1,4 +1,4 @@
-package com.kohls.platform.models;
+package com.aetna.ahm.core.models.qr;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;

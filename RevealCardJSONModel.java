@@ -1,4 +1,4 @@
-package com.kohls.platform.models;
+package com.aetna.ahm.core.models.qr;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
@@ -37,8 +37,8 @@ import javax.jcr.Node;
         }
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "recipe")
-public class RevealCardModel implements ComponentExporter {
+@JsonRootName(value = "revealcard")
+public class RevealCardJSONModel implements ComponentExporter {
     private static Logger LOG = LoggerFactory.getLogger(RevealCardModel.class);
 
 
