@@ -22,12 +22,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.jcr.Node;
-import java.util.*;
 
 @Model(
         adaptables = {Resource.class, SlingHttpServletRequest.class},
         adapters = ComponentExporter.class,
-        resourceType = "/apps/ahm/components/content/video",
+        resourceType = "/apps/ahm/components/content/revealcard",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(
@@ -39,8 +38,8 @@ import java.util.*;
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
 @JsonRootName(value = "recipe")
-public class VideoModel implements ComponentExporter {
-    private static Logger LOG = LoggerFactory.getLogger(VideoModel.class);
+public class RevealCardModel implements ComponentExporter {
+    private static Logger LOG = LoggerFactory.getLogger(RevealCardModel.class);
 
 
     @ScriptVariable
@@ -53,23 +52,27 @@ public class VideoModel implements ComponentExporter {
     private Resource resource;
 
     @ValueMapValue
-    @JsonProperty("VideoUrl")
-    private String videoPathEmmi;
+    @JsonProperty("CardTitle")
+    private String cardTitle;
 
     @ValueMapValue
-    @JsonProperty("FilePath")
-    private String videoPathUpload;
+    @JsonProperty("Message")
+    private String cardMessage;
 
     @ValueMapValue
-    @JsonProperty("VideoType")
-    private String videotype;
+    @JsonProperty("SortOrder")
+    private String sortOrder;
 
     @ValueMapValue
-    @JsonProperty("VideoId")
-    private String videoid;
+    @JsonProperty("ImagePath")
+    private String cardImage;
+
 
     @JsonProperty("Name")
     private String name;
+
+    @JsonProperty("ImageName")
+    private String imageName;
 
     @JsonProperty("Title")
     private String title;
@@ -77,37 +80,17 @@ public class VideoModel implements ComponentExporter {
     @JsonProperty("Description")
     private String description;
 
-    private String imagePath;
-    Resource imageResource;
-    private ValueMap metadataValueMap;
+    private Resource imageResource;
 
     @PostConstruct
     protected void invokePost() {
         name = pageProperties.get("jcr:title", String.class);
         title = pageProperties.get("jcr:title", String.class);
         description = pageProperties.get("jcr:description", String.class);
-        if ("emmi".equalsIgnoreCase(videotype)) {
-            imageResource = resourceResolver.getResource(videoPathEmmi);
-        } else {
-            imageResource = resourceResolver.getResource(videoPathUpload);
+        Resource imageResource = resourceResolver.getResource(cardImage);
+        if (null != imageResource) {
+            imageName = imageResource.getName();
         }
-    }
-
-    public List<Map<String, String>> getRenditions() {
-        List<Map<String, String>> list = new ArrayList<>();
-        if (null != imageResource && imageResource.hasChildren()) {
-            Resource rendtionResource = imageResource.getChild("jcr:content/renditions");
-            if (rendtionResource != null) {
-                Iterator<Resource> iterator = rendtionResource.listChildren();
-                Map map = new HashMap();
-                while (iterator.hasNext()) {
-                    Resource eachImageResource = iterator.next();
-                    map.put(eachImageResource.getName(), eachImageResource.getPath());
-                }
-                list.add(map);
-            }
-        }
-        return list;
     }
 
     @Override
@@ -116,20 +99,16 @@ public class VideoModel implements ComponentExporter {
         return resource.getResourceType();
     }
 
-    public String getVideoPathEmmi() {
-        return videoPathEmmi;
+    public String getCardTitle() {
+        return cardTitle;
     }
 
-    public String getVideoPathUpload() {
-        return videoPathUpload;
+    public String getCardMessage() {
+        return cardMessage;
     }
 
-    public String getVideotype() {
-        return videotype;
-    }
-
-    public String getVideoid() {
-        return videoid;
+    public String getCardImage() {
+        return cardImage;
     }
 
     public String getName() {
@@ -142,5 +121,9 @@ public class VideoModel implements ComponentExporter {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getImageName() {
+        return imageName;
     }
 }
