@@ -1,7 +1,11 @@
-package com.aetna.ahm.core.models.qr;
+package ahm.content.service.core.models;
 
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
+import com.day.cq.commons.inherit.HierarchyNodeInheritanceValueMap;
+import com.day.cq.commons.inherit.InheritanceValueMap;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,10 +14,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
-import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.*;
 import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
@@ -21,13 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.jcr.Node;
 import java.util.*;
 
 @Model(
-        adaptables = {Resource.class, SlingHttpServletRequest.class},
+        adaptables = {Resource.class},
         adapters = ComponentExporter.class,
-        resourceType = "/apps/ahm/components/content/video",
+        resourceType = "dgtl-content/components/content/video",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(
@@ -38,33 +40,24 @@ import java.util.*;
         }
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "recipe")
+@JsonRootName(value = "video")
 public class VideoModel implements ComponentExporter {
     private static Logger LOG = LoggerFactory.getLogger(VideoModel.class);
 
 
-    @ScriptVariable
-    protected ValueMap pageProperties;
-
-    @SlingObject
-    ResourceResolver resourceResolver;
-
-    @SlingObject
-    private Resource resource;
-
-    @ValueMapValue
-    @JsonProperty("VideoUrl")
-    private String videoPathEmmi;
-
-    @ValueMapValue
-    @JsonProperty("FilePath")
-    private String videoPathUpload;
-
-    @ValueMapValue
+    @Inject
     @JsonProperty("VideoType")
     private String videotype;
 
-    @ValueMapValue
+    @Inject
+    @JsonProperty("VideoUrl")
+    private String videoPathEmmi;
+
+    @Inject
+    @JsonProperty("FilePath")
+    private String videoPathUpload;
+
+    @Inject
     @JsonProperty("VideoId")
     private String videoid;
 
@@ -77,25 +70,45 @@ public class VideoModel implements ComponentExporter {
     @JsonProperty("Description")
     private String description;
 
-    private String imagePath;
+    @JsonProperty("VideoWidgetId")
+    private String videoWidgetId;
+
+
+    @SlingObject
+    private Resource resource;
+
     Resource imageResource;
     private ValueMap metadataValueMap;
 
+    @SlingObject
+    ResourceResolver resourceResolver;
+
+
     @PostConstruct
     protected void invokePost() {
+        PageManager pageManager = resourceResolver.adaptTo(PageManager.class);
+        Page currentPage = pageManager.getPage(resource.getParent().getParent().getParent().getPath());
+        ValueMap pageProperties = currentPage.getProperties();
         name = pageProperties.get("jcr:title", String.class);
         title = pageProperties.get("jcr:title", String.class);
+        videoWidgetId = currentPage.getParent().getProperties().get("id", String.class);
         description = pageProperties.get("jcr:description", String.class);
         if ("emmi".equalsIgnoreCase(videotype)) {
             imageResource = resourceResolver.getResource(videoPathEmmi);
         } else {
             imageResource = resourceResolver.getResource(videoPathUpload);
         }
+        if (null != imageResource) {
+            Resource metadataResource = imageResource.getChild("jcr:content/metadata");
+            if (metadataResource != null) {
+                metadataValueMap = metadataResource.getValueMap();
+            }
+        }
     }
 
     public List<Map<String, String>> getRenditions() {
         List<Map<String, String>> list = new ArrayList<>();
-        if (null != imageResource && imageResource.hasChildren()) {
+        if (null != imageResource) {
             Resource rendtionResource = imageResource.getChild("jcr:content/renditions");
             if (rendtionResource != null) {
                 Iterator<Resource> iterator = rendtionResource.listChildren();
@@ -110,10 +123,12 @@ public class VideoModel implements ComponentExporter {
         return list;
     }
 
-    @Override
-    @JsonIgnore
-    public String getExportedType() {
-        return resource.getResourceType();
+    public String getVideotype() {
+        return videotype;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getVideoPathEmmi() {
@@ -124,10 +139,6 @@ public class VideoModel implements ComponentExporter {
         return videoPathUpload;
     }
 
-    public String getVideotype() {
-        return videotype;
-    }
-
     public String getVideoid() {
         return videoid;
     }
@@ -136,11 +147,13 @@ public class VideoModel implements ComponentExporter {
         return name;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getExportedType() {
+        return null;
     }
 }
