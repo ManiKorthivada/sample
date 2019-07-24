@@ -57,7 +57,11 @@ public class ExportServlet extends SlingAllMethodsServlet {
         final PrintWriter out = response.getWriter();
         final ResourceResolver resolver = request.getResourceResolver();
         String currentIdPath = getPathfromId(request, resolver);
-        Resource resource = resolver.getResource(currentIdPath + "/master/jcr:content/root");
+        Resource jcrResource = resolver.getResource(currentIdPath + "/master/jcr:content");
+        ValueMap valueMap = jcrResource.getValueMap();
+        String template = valueMap.get("cq:template", String.class);
+        String resourcePath = getResourcePath(request, resolver, template, currentIdPath);
+        Resource resource = resolver.getResource(resourcePath).getParent();
         JSONArray jsonArray = new JSONArray();
         if (resource.hasChildren()) {
             Iterator<Resource> childResources = resource.listChildren();
@@ -74,6 +78,29 @@ public class ExportServlet extends SlingAllMethodsServlet {
             }
         }
         out.print(jsonArray);
+    }
+
+    private String getResourcePath(SlingHttpServletRequest request, ResourceResolver resolver, String template, String currentIdPath) {
+        final Map<String, String> map = new HashMap<String, String>();
+        String value = StringUtils.EMPTY;
+        if ("/conf/ahm/settings/wcm/templates/video-xf-template".equalsIgnoreCase(template)) {
+            value = "dgtl-content/components/content/video";
+        }
+        map.put("type", "nt:unstructured");
+        map.put("path", currentIdPath);
+        map.put("property", "sling:resourceType");
+        map.put("property.value", value);
+        map.put("p.limit", "-1");
+        Query query = queryBuilder.createQuery(PredicateGroup.create(map), resolver.adaptTo(Session.class));
+        SearchResult result = query.getResult();
+        for (final Hit hit : result.getHits()) {
+            try {
+                return hit.getPath();
+            } catch (RepositoryException e) {
+                e.printStackTrace();
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
     private String getPathfromId(SlingHttpServletRequest request, ResourceResolver resolver) {
