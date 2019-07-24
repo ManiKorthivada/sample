@@ -57,27 +57,29 @@ public class ExportServlet extends SlingAllMethodsServlet {
         final PrintWriter out = response.getWriter();
         final ResourceResolver resolver = request.getResourceResolver();
         String currentIdPath = getPathfromId(request, resolver);
-        Resource jcrResource = resolver.getResource(currentIdPath + "/master/jcr:content");
-        ValueMap valueMap = jcrResource.getValueMap();
-        String template = valueMap.get("cq:template", String.class);
-        String resourcePath = getResourcePath(request, resolver, template, currentIdPath);
-        Resource resource = resolver.getResource(resourcePath).getParent();
-        JSONArray jsonArray = new JSONArray();
-        if (resource.hasChildren()) {
-            Iterator<Resource> childResources = resource.listChildren();
-            while (childResources.hasNext()) {
-                Resource child = childResources.next();
-                VideoModel videoModel = child.adaptTo(VideoModel.class);
-                ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(videoModel));
-                    jsonArray.put(jsonObject);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Resource jcrResource = resolver.getResource(currentIdPath+"/jcr:content");
+        if (null != jcrResource) {
+            ValueMap valueMap = jcrResource.getValueMap();
+            String template = valueMap.get("cq:template", String.class);
+            String resourcePath = getResourcePath(request, resolver, template, currentIdPath);
+            Resource resource = resolver.getResource(resourcePath).getParent();
+            JSONArray jsonArray = new JSONArray();
+            if (resource.hasChildren()) {
+                Iterator<Resource> childResources = resource.listChildren();
+                while (childResources.hasNext()) {
+                    Resource child = childResources.next();
+                    VideoModel videoModel = child.adaptTo(VideoModel.class);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    try {
+                        JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(videoModel));
+                        jsonArray.put(jsonObject);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            out.print(jsonArray);
         }
-        out.print(jsonArray);
     }
 
     private String getResourcePath(SlingHttpServletRequest request, ResourceResolver resolver, String template, String currentIdPath) {
@@ -108,7 +110,7 @@ public class ExportServlet extends SlingAllMethodsServlet {
         final Map<String, String> map = new HashMap<String, String>();
         map.put("type", "cq:Page");
         map.put("path", "/content/experience-fragments");
-        map.put("property", "jcr:content/id");
+        map.put("property", "jcr:content/sling:alias");
         map.put("property.value", id);
         map.put("p.limit", "-1");
         Query query = queryBuilder.createQuery(PredicateGroup.create(map), resolver.adaptTo(Session.class));
