@@ -1,5 +1,6 @@
 package ahm.content.service.core.servlets;
 
+import ahm.content.service.core.models.HtmlModel;
 import ahm.content.service.core.models.VideoModel;
 import com.day.cq.search.PredicateGroup;
 import com.day.cq.search.Query;
@@ -13,7 +14,6 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.*;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,37 +57,51 @@ public class ExportServlet extends SlingAllMethodsServlet {
         final PrintWriter out = response.getWriter();
         final ResourceResolver resolver = request.getResourceResolver();
         String currentIdPath = getPathfromId(request, resolver);
-        Resource jcrResource = resolver.getResource(currentIdPath+"/jcr:content");
+        logger.debug("Current Path of the ID parameter {}", currentIdPath);
+        Resource jcrResource = resolver.getResource(currentIdPath + "/jcr:content");
         if (null != jcrResource) {
             ValueMap valueMap = jcrResource.getValueMap();
             String template = valueMap.get("cq:template", String.class);
+            logger.debug("Current template path {}", template);
             String resourcePath = getResourcePath(request, resolver, template, currentIdPath);
             Resource resource = resolver.getResource(resourcePath).getParent();
             JSONArray jsonArray = new JSONArray();
             if (resource.hasChildren()) {
                 Iterator<Resource> childResources = resource.listChildren();
-                while (childResources.hasNext()) {
-                    Resource child = childResources.next();
-                    VideoModel videoModel = child.adaptTo(VideoModel.class);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    try {
-                        JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(videoModel));
-                        jsonArray.put(jsonObject);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                getFinalJsonArray(template, jsonArray, childResources);
             }
             out.print(jsonArray);
+        }
+    }
+
+    private void getFinalJsonArray(String template, JSONArray jsonArray, Iterator<Resource> childResources) {
+        while (childResources.hasNext()) {
+            Resource child = childResources.next();
+            ValueMap valueMap1 = child.getValueMap();
+            String resourcetype = valueMap1.get("sling:resourceType", String.class);
+            JSONObject jsonObject = null;
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                if ("dgtl-content/components/content/html".equalsIgnoreCase(resourcetype)) {
+                    logger.debug("Html Resource {}", template);
+                    HtmlModel htmlModel = child.adaptTo(HtmlModel.class);
+                    jsonObject = new JSONObject(objectMapper.writeValueAsString(htmlModel));
+                } else if ("dgtl-content/components/content/video".equalsIgnoreCase(resourcetype)) {
+                    logger.debug("Video Resource {}", template);
+                    VideoModel videoModel = child.adaptTo(VideoModel.class);
+                    jsonObject = new JSONObject(objectMapper.writeValueAsString(videoModel));
+                }
+            } catch (Exception e) {
+
+            }
+            jsonArray.put(jsonObject);
         }
     }
 
     private String getResourcePath(SlingHttpServletRequest request, ResourceResolver resolver, String template, String currentIdPath) {
         final Map<String, String> map = new HashMap<String, String>();
         String value = StringUtils.EMPTY;
-        if ("/conf/ahm/settings/wcm/templates/video-xf-template".equalsIgnoreCase(template)) {
-            value = "dgtl-content/components/content/video";
-        }
+        value = getResourceValue(template, value);
         map.put("type", "nt:unstructured");
         map.put("path", currentIdPath);
         map.put("property", "sling:resourceType");
@@ -103,6 +117,16 @@ public class ExportServlet extends SlingAllMethodsServlet {
             }
         }
         return StringUtils.EMPTY;
+    }
+
+    private String getResourceValue(String template, String value) {
+        if ("/conf/ahm/settings/wcm/templates/video-xf-template".equalsIgnoreCase(template)) {
+            value = "dgtl-content/components/content/video";
+        }
+        if ("/conf/ahm/settings/wcm/templates/html-xf-template".equalsIgnoreCase(template)) {
+            value = "dgtl-content/components/content/html";
+        }
+        return value;
     }
 
     private String getPathfromId(SlingHttpServletRequest request, ResourceResolver resolver) {
