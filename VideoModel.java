@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -25,11 +26,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.jcr.Node;
 import java.util.*;
+import java.util.Map.Entry;
 
 @Model(
         adaptables = {Resource.class},
         adapters = ComponentExporter.class,
-        resourceType = "dgtl-content/components/content/video",
+        resourceType = "/apps/dgtl-content/components/content/video",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(
@@ -50,29 +52,16 @@ public class VideoModel implements ComponentExporter {
     private String videotype;
 
     @Inject
-    @JsonProperty("VideoUrl")
+    @JsonProperty("ExternalVideoUrl")
     private String videoPathEmmi;
 
     @Inject
-    @JsonProperty("FilePath")
+    @JsonProperty("VideoPath")
     private String videoPathUpload;
 
     @Inject
     @JsonProperty("VideoId")
     private String videoid;
-
-    @JsonProperty("Name")
-    private String name;
-
-    @JsonProperty("Title")
-    private String title;
-
-    @JsonProperty("Description")
-    private String description;
-
-    @JsonProperty("VideoWidgetId")
-    private String videoWidgetId;
-
 
     @SlingObject
     private Resource resource;
@@ -83,27 +72,26 @@ public class VideoModel implements ComponentExporter {
     @SlingObject
     ResourceResolver resourceResolver;
 
-
+    
     @PostConstruct
-    protected void invokePost() {
-        PageManager pageManager = resourceResolver.adaptTo(PageManager.class);
-        Page currentPage = pageManager.getPage(resource.getParent().getParent().getParent().getPath());
-        ValueMap pageProperties = currentPage.getProperties();
-        name = pageProperties.get("jcr:title", String.class);
-        title = pageProperties.get("jcr:title", String.class);
-        videoWidgetId = currentPage.getParent().getProperties().get("id", String.class);
-        description = pageProperties.get("jcr:description", String.class);
-        if ("emmi".equalsIgnoreCase(videotype)) {
-            imageResource = resourceResolver.getResource(videoPathEmmi);
-        } else {
-            imageResource = resourceResolver.getResource(videoPathUpload);
-        }
-        if (null != imageResource) {
-            Resource metadataResource = imageResource.getChild("jcr:content/metadata");
-            if (metadataResource != null) {
-                metadataValueMap = metadataResource.getValueMap();
-            }
-        }
+    protected void invokepost()  {
+
+             ModifiableValueMap map1 = resource.adaptTo(ModifiableValueMap.class);
+                 for(Entry<String, Object> entry:map1.entrySet()){    
+                    
+                	 String key = entry.getKey();  
+                     Object value = entry.getValue();  
+                    
+              
+                     if(key.equals("VideoType"))
+                     {
+                    	 videotype = (String) value;
+                     }
+                     else if(key.equals("VideoPath"))
+                     {
+                    	 videoPathUpload = (String) value; 
+                     }
+                 }
     }
 
     public List<Map<String, String>> getRenditions() {
@@ -127,10 +115,6 @@ public class VideoModel implements ComponentExporter {
         return videotype;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getVideoPathEmmi() {
         return videoPathEmmi;
     }
@@ -143,13 +127,7 @@ public class VideoModel implements ComponentExporter {
         return videoid;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public String getDescription() {
-        return description;
-    }
 
     @Override
     @JsonIgnore

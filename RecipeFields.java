@@ -3,14 +3,11 @@ package ahm.content.service.core.models;
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
 import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.ExporterOption;
@@ -20,34 +17,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 
 @Model(
         adaptables = {Resource.class},
         adapters = ComponentExporter.class,
-        resourceType = "/apps/dgtl-content/components/content/html",
+        resourceType = {"/apps/dgtl-content/components/structure/recipexfpagewidget"},
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(
         name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
+
         extensions = ExporterConstants.SLING_MODEL_EXTENSION,
         options = {
                 @ExporterOption(name = "SerializationFeature.WRAP_ROOT_VALUE", value = "true")
         }
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "html")
-public class HtmlModel implements ComponentExporter {
-    private static Logger LOG = LoggerFactory.getLogger(HtmlModel.class);
+@JsonRootName(value = "Recipe")
+
+public class RecipeFields extends BaseModel implements ComponentExporter {
+    private static Logger LOG = LoggerFactory.getLogger(VideoModel.class);
+    @SlingObject
+    Resource resource;
+
+    @JsonProperty("Recipe")
+    private RecipeModel recipeModel;
 
 
-    @Inject
-    @JsonProperty("Html Content")
-    private String HtmlContent;
+    @PostConstruct
+    protected void invokepost() {
+        super.resource = resource.getParent();
+        super.invokepost();
+        recipeModel = new RecipeModel();
+        Iterator<Resource> iteratorExp = resource.getChild("root/responsivegrid/").listChildren();
 
-    public String HtmlContent() {
-        return HtmlContent;
+        while (iteratorExp.hasNext()) {
+            Resource childResource = iteratorExp.next();
+            recipeModel = childResource.adaptTo(RecipeModel.class);
+        }
     }
 
     @Override
@@ -56,3 +66,4 @@ public class HtmlModel implements ComponentExporter {
         return null;
     }
 }
+ 

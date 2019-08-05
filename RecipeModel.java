@@ -48,15 +48,7 @@ public class RecipeModel implements ComponentExporter {
 
     @Inject
     @JsonProperty("Categories")
-    private String categories;
-
-
-    
-    @PostConstruct
-    protected void invokepost()  {
-
-
-    }
+    private String[] categories;
 
     @Override
     @JsonIgnore
