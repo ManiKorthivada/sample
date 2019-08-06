@@ -43,106 +43,105 @@ import java.util.Map.Entry;
         adaptables = {Resource.class},
         adapters = ComponentExporter.class,
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
-		)
+)
 @Exporter(
         name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
         extensions = ExporterConstants.SLING_MODEL_EXTENSION,
         options = {
                 @ExporterOption(name = "SerializationFeature.WRAP_ROOT_VALUE", value = "true")
-        	}
-		)
+        }
+)
 @JsonInclude(JsonInclude.Include.ALWAYS)
 @JsonRootName(value = "BaseModel")
 
 
 public class BaseModel implements ComponentExporter {
-	   private static Logger LOG = LoggerFactory.getLogger(BaseModel.class);
+    private static Logger LOG = LoggerFactory.getLogger(BaseModel.class);
     @SlingObject
     Resource resource;
-    
+
     @SlingObject
     ResourceResolver resourceResolver;
-        
+
     @JsonProperty("Id")
     private String id;
-    
+
     public String getId() {
-		return id;
-	}
+        return id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String[] getTag() {
-		return tag;
-	}
+    public String[] getTag() {
+        return tag;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
 
-	@JsonProperty("Title")
+    @JsonProperty("Title")
     private String title;
-    
-    
+
+
     @JsonProperty("Description")
     private String description;
 
     @JsonProperty("Tags")
     private String[] tag;
-    
+
     @JsonProperty("Name")
     private String name;
-     
+
     @JsonProperty("XfName")
     private String xfname;
-    
+
     public String getXfname() {
-		return xfname;
-	}
+        return xfname;
+    }
 
 
-	@PostConstruct
-    protected void invokepost()  {
-    	 
-    	
-		 name = resource.getName();
-		 xfname=resource.getParent().getName();
+    @PostConstruct
+    protected void invokepost() {
 
-         Resource xfResource = resource.getParent().getChild("jcr:content");
 
-    	 ModifiableValueMap mapxf = xfResource.adaptTo(ModifiableValueMap.class);
+        name = resource.getName();
+        xfname = resource.getParent().getName();
+        if ("master".equalsIgnoreCase(name)) {
+            name = StringUtils.EMPTY;
+        } else {
+            name = xfname;
+            xfname = StringUtils.EMPTY;
+        }
+        Resource xfResource = resource.getParent().getChild("jcr:content");
 
-         for(Entry<String, Object> entry:mapxf.entrySet()){
-            
-        	 String key = entry.getKey();  
-             Object value = entry.getValue();  
-            
-      
-             if(key.equals(AHMJsonServiceConstants.JCR_TITLE))
-             {
-            	 title = (String) value;
-             }
-             else if(key.equals(AHMJsonServiceConstants.JCR_DESC))
-             {
-            	 description = (String) value;
-             }              
-             else if(key.equals(AHMJsonServiceConstants.CQ_TAGS))
-             {
-            	 tag = (String[]) value;
-             }
-             if(key.equals(AHMJsonServiceConstants.SLING_ALIAS))
-             {
-                 id = (String) value;
-             }
+        ModifiableValueMap mapxf = xfResource.adaptTo(ModifiableValueMap.class);
 
-         }
+        for (Entry<String, Object> entry : mapxf.entrySet()) {
+
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+
+            if (key.equals(AHMJsonServiceConstants.JCR_TITLE)) {
+                title = (String) value;
+            } else if (key.equals(AHMJsonServiceConstants.JCR_DESC)) {
+                description = (String) value;
+            } else if (key.equals(AHMJsonServiceConstants.CQ_TAGS)) {
+                tag = (String[]) value;
+            }
+            if (key.equals(AHMJsonServiceConstants.SLING_ALIAS)) {
+                id = (String) value;
+            }
+
+        }
     }
 
 
