@@ -6,49 +6,58 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
-import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.*;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
+import org.apache.sling.models.annotations.via.ChildResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Iterator;
+
 
 @Model(
         adaptables = {Resource.class},
         adapters = ComponentExporter.class,
-        resourceType = "/apps/dgtl-content/components/content/recipe",
+        resourceType = {"/apps/dgtl-content/components/structure/recipexfpagewidget"},
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(
         name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
+
         extensions = ExporterConstants.SLING_MODEL_EXTENSION,
         options = {
                 @ExporterOption(name = "SerializationFeature.WRAP_ROOT_VALUE", value = "true")
         }
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "recipe")
-public class RecipeModel implements ComponentExporter {
+@JsonRootName(value = "Recipe")
+
+public class RecipeModel extends BaseModel implements ComponentExporter {
     private static Logger LOG = LoggerFactory.getLogger(RecipeModel.class);
 
+    @Override
+    public String getWidgetType() {
+        return "Recipe";
+    }
 
-    @Inject
+
+    @Inject @Via(value = "root/responsivegrid/recipe",type= ChildResource.class)
     @JsonProperty("Html")
-    private String webHtmlContent;
+    private String HtmlContent;
 
-    @Inject
+    @Inject @Via(value = "root/responsivegrid/recipe",type= ChildResource.class)
     @JsonProperty("Categories")
     private String[] categories;
+
+
+    @PostConstruct
+    protected void invokepost() {
+        super.Initialize();
+    }
+
 
     @Override
     @JsonIgnore
