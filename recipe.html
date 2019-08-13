@@ -1,0 +1,38 @@
+
+
+
+<sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html" data-sly-call="${clientLib.css @ categories='recipe'}" ></sly>
+<div class="components-container">
+
+
+
+
+
+    </div>
+    <sly data-sly-test.hasContent="${properties.webHtmlContent}"/>
+    <div data-sly-test="${!hasContent}" class="recipe-container top-margin-40">
+
+        <div class="rec-content-edit">
+
+            <div><img src="/content/dam/ahm/component_assets/restaurant-cutlery.png" alt="cutlery"/></div>
+            <span class="underline-edit"></span>
+            <span class="underline-edit"></span>
+            <span class="underline-edit"></span>
+            <span class="underline-edit"></span>
+            <span class="underline-edit"></span>
+
+        </div>
+
+    </div>
+
+
+	<div class="rctag-area" data-sly-list="${properties.categories}">
+		<span class="recipe-tag">${item}</span>
+	</div>
+   ${properties.webHtmlContent @context = 'html'}
+
+<div class="line-seperator">
+    <div class="comp-notes">
+        <span class="note">Note:</span>Please click on the Recipe component and use the <coral-icon icon="wrench" size="S"> </coral-icon> icon to configure properties.To publish the page click on <coral-icon icon="properties" size="S"> </coral-icon> icon
+    </div>
+ </div>

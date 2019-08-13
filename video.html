@@ -1,0 +1,95 @@
+
+<sly data-sly-use.clientLib="${'/libs/granite/sightly/templates/clientlib.html'}"/>
+
+<sly data-sly-call="${clientlib.all @ categories='video'}"/>
+<sly data-sly-call="${clientlib.all @ categories='coralui3'}"/>
+
+<sly data-sly-use.model="${'ahm.content.service.core.models.AssetMetadataModel' @videopath=properties.videoPathUpload}"/>
+<sly data-sly-test.hasContent="${properties.videotype && (properties.videoPathUpload || properties.videoPathExternal)}"/>
+
+
+
+<div class="components-container">
+
+	</sly>
+
+
+
+    <sly data-sly-test="${!hasContent}">
+    <div class="comp-element">
+		<img src="/content/dam/ahm/component_assets/play.png" class="icon-play"/>
+		<span class="play-time">0:00</span>
+		<img src="/content/dam/ahm/component_assets/volume.png" class="icon-volume"/>
+		<img src="/content/dam/ahm/component_assets/full_screen.png" class="icon-fscreen"/>
+		<img src="/content/dam/ahm/component_assets/menu_option.png" class="icon-menu"/>
+		<span class="bottom-border"></span>
+
+	</div>
+    </sly>
+
+
+    <sly data-sly-test="${properties.videotype=='external' && hasContent}">
+	<div class="upload-details">
+			<label>Video Type:</label>
+			<span>External</span>
+	</div>
+	<div class="upload-details">
+			<label>Video ID:</label>
+			<span>${properties.videoid}</span>
+	</div>
+
+	<div class="upload-details">
+			<label>Video Path:</label>
+			<span>${properties.videoPathExternal}</span>
+	</div>
+
+
+	<div class="video-load after-details-margin">
+		<video id="videoTag" width="445" height="254" controls poster="${properties.videoPathExternal}/jcr:content/renditions/cq5dam.thumbnail.140.100.png">
+			<source src="${properties.videoPathExternal}" type="video/mp4">
+			<source src="${properties.videoPathExternal}" type="video/ogg">
+			Your browser does not support the video tag.
+		  </video>
+	</div>
+	</sly>
+    <sly data-sly-test="${properties.videotype=='upload' && hasContent}">
+
+            <div class="upload-details">
+                    <label>Video Type:</label>
+                    <span>Upload</span>
+            </div>
+
+            <div class="upload-details">
+			<label>Video File Name:</label>
+			<span>${model.title}</span>
+	</div>
+
+            <div class="video-load after-details-margin">
+                <video id="videoTag" width="445" height="254" controls poster="${properties.videoPathUpload}/jcr:content/renditions/cq5dam.thumbnail.140.100.png">
+                    <source src="${properties.videoPathUpload}" type="video/mp4">
+                    <source src="${properties.videoPathUpload}" type="video/ogg">
+                    Your browser does not support the video tag.
+                  </video>
+            </div>
+            <div class="upload-success">
+                <div class="pull-left">
+                    <div class="file-shortname">cc</div>
+                    <div class="file-details">
+                        <p>Video CC File</p>
+                        <a href="${model.videoCCVal}" target="_blank">${model.videoCCVal}</a>
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <div class="tick">
+                        <img src="/content/dam/ahm/component_assets/done_copy2.png" alt="done"/>
+                    </div>
+                </div>
+            </div>
+    </sly>
+	<div class="line-seperator"></div>
+	<div class="comp-notes">
+		<span class="note">Note:</span>Please click on the Video component and use the <coral-icon icon="wrench" size="S"> </coral-icon> icon to configure properties.To publish the page click on <coral-icon icon="properties" size="S"> </coral-icon> icon
+	</div>
+</div>
+
+

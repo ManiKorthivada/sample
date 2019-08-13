@@ -1,0 +1,52 @@
+
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
+data-sly-call="${clientlib.all @ categories='revealCard'}"
+data-sly-use.revealCard="ahm.content.service.core.models.SortOrder"/>
+<div class="components-container">
+<div class="component-title no-padding">
+		<h1 data-sly-test="${properties.sortOrder ==1}"></h1>
+    </div>
+
+	<ul class="multiple-comp">
+	<li>
+		<div class="component-panel">
+			<div class="panel-front">
+				<div class="card-note">
+                <sly data-sly-test.image=${properties.cardImage}>
+                <img src="${properties.cardImage}"/>
+                </sly>
+                <sly data-sly-test=${!image}>
+
+					<div class="inner-note">Click on the card component and use the <coral-icon icon="wrench" size="S"> </coral-icon> icon to configure properties</div>
+</sly>
+                </div>
+				<div class="panel-details">
+					<div class="pull-left name-card">
+						<div class="card-label">card front</div>
+						<div class="detail-name">${revealCard.imageName}</div>
+					</div>
+					<span class="numbering">${properties.sortOrder}</span>
+				</div>
+			</div>
+			<div class="panel-back">
+				<div class="panel-content">
+					<h5>${properties.cardTitle}</h5>
+					<p>${properties.cardMessage}</p>
+				</div>
+				<div class="panel-details">
+                      <div class="pull-left">
+					<p class="card-label">card back</p>
+                  </div>
+					<div class="pull-right"><span class="numbering">${properties.sortOrder}</span></div>
+				</div>
+			</div>
+		</div>
+	</li>
+	</ul>
+
+	<div class="line-seperator">
+	<div class="comp-title-notes">
+
+		<span class="note">Note:</span> Drag and drop to rearrange the Sort order of the Reveal Card.To publish the page click on <coral-icon icon="properties" size="S"> </coral-icon> icon </span>
+	</div>
+</div>
