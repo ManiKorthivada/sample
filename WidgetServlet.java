@@ -62,7 +62,10 @@ public class WidgetServlet extends SlingAllMethodsServlet {
         final PrintWriter out = response.getWriter();
         final ResourceResolver resolver = request.getResourceResolver();
 
-        String id = request.getParameter("widgetId");
+        String id = request.getRequestPathInfo().getSuffix();
+        if (StringUtils.startsWith(id, "/")) {
+            id = StringUtils.substring(id, 1);
+        }
         UUID uid = UUID.fromString(id);
 
         try {
