@@ -37,7 +37,12 @@ public class VideoComponent implements ComponentExporter {
 	@JsonProperty("VideoPath")
 	private String videoPath;
 
+	@JsonProperty("VideoCC")
+	private String videoCC;
 
+	public String getVideoCC() {
+		return videoCC;
+	}
 
 	@Inject
 	@JsonProperty("VideoId")
@@ -64,6 +69,8 @@ public class VideoComponent implements ComponentExporter {
 			videoPath = values.get("videoPathExternal",String.class);
 		}else{
 			videoPath = values.get("videoPathUpload",String.class);
+			Resource videoResource = resource.getResourceResolver().getResource(videoPath+"jcr:content/metadata");
+			videoCC = videoResource.getValueMap().get("videoCC",String.class);
 		}
 	}
 
