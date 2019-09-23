@@ -1,0 +1,117 @@
+
+.video-load{
+	position: relative;
+	margin-top:70px;
+	height: 254px;	
+	width: 445px;	
+	background-color: #A0A0A0;	
+	background: linear-gradient(180deg, rgba(205,205,205,0.5) 0%, rgba(128,128,128,0.5) 30.9%, rgba(60,60,60,0.5) 53.34%, rgba(0,0,0,0.8) 100%);
+}
+.video-load{
+	background:#000000;
+}
+.upload-details{
+	padding: 25px 0 0 0;
+}
+.upload-details label, .upload-details span {
+	color: #4A4A4A;	
+	font-size: 18px;
+}
+.upload-details label{
+	font-weight:bold;
+}
+.after-details-margin{
+	margin-top:40px;
+}
+.upload-success{
+	margin:40px auto 20px auto;
+	height:100px;	
+	border-radius: 33px;
+	background: rgb(224, 236, 244, 0.64);
+}
+.file-shortname{
+	height:54px;
+	width:54px;
+	border: 2px solid #3D3D3D;
+	line-height: 54px;
+	float:left;
+	margin:23px 19px 23px 27px;
+	text-align: center;
+	border-radius: 30px;
+	font-size: 28px;	
+	font-weight: bold;
+}
+.tick{
+	width:50px;
+	height:50px;
+	border: 2px solid #979797;	
+	background-color: #FAFAFA;
+	border-radius: 28px;
+    text-align: center;
+	display: grid;
+	margin:25px 32px 25px 0;
+}
+.tick img{
+	width: 26px;
+    grid-area: none;
+}
+.file-details{
+	float:left;
+	margin:22px 20px 24px 0;
+}
+.file-details p{
+	margin:0;
+	font-size:24px;
+	font-weight: bold;
+}
+.file-details a{
+	color: #4196D5;
+	font-size:18px;
+	padding: 5px 0;
+	display: inline-block;
+	text-decoration: none;
+}
+
+
+.icon-play{
+	width:10px;
+	position:absolute;
+	bottom:35px;
+	left:27px;
+}
+.icon-volume, .icon-fscreen {
+	width:13px;
+
+}
+.icon-menu{
+	height:16px;
+}
+.play-time{
+	font-size:9px;
+	color:#ffffff;
+	position:absolute;
+	bottom:36px;
+	left:51px;
+}
+.icon-volume{
+	position:absolute;
+	bottom:35px;
+	right:72px;
+}
+.icon-fscreen{
+	position:absolute;
+	bottom:35px;
+	right:42px;
+}
+.icon-menu{
+	position:absolute;
+	bottom:34px;
+	right:22px;
+}
+.bottom-border{
+	border:1px solid #ffffff;
+	width:90%;
+	position: absolute;
+	bottom:20px;
+	margin:auto 20px;
+}

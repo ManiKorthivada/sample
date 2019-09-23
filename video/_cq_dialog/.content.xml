@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Video"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[video.Dialog]">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/foundation/container">
+        <layout
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/foundation/layouts/fixedcolumns"
+            type="nav"/>
+        <items jcr:primaryType="nt:unstructured">
+            <columns
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/foundation/container">
+                <items jcr:primaryType="nt:unstructured">
+                    <videotype
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/foundation/form/select"
+                        class="cq-dialog-dropdown-showhide"
+                        cq-dialog-dropdown-showhide-target=".list-option-listfrom-showhide-target"
+                        fieldLabel="Video Type"
+                        name="./videotype"
+                        required="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <upload
+                                jcr:primaryType="nt:unstructured"
+                                text="Upload"
+                                value="upload"/>
+                            <external
+                                jcr:primaryType="nt:unstructured"
+                                text="External"
+                                value="external"/>
+                        </items>
+                    </videotype>
+                    <uploadfields
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/foundation/container"
+                        class="hide list-option-listfrom-showhide-target"
+                        required="{Boolean}true"
+                        showhidetargetvalue="upload">
+                        <items jcr:primaryType="nt:unstructured">
+                            <video
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/form/pathbrowser"
+                                fieldLabel="Video Path"
+                                name="./videoPath"
+                                rootPath="/content/dam"
+                                validation="video-validate"
+                                value="/content/dam/dgtl-content/components/videos"/>
+                        </items>
+                    </uploadfields>
+                </items>
+            </columns>
+        </items>
+    </content>
+</jcr:root>

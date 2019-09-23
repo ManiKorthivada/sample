@@ -1,67 +1,20 @@
 package ahm.content.service.core.models;
 
-import com.adobe.cq.export.json.ComponentExporter;
-import com.adobe.cq.export.json.ExporterConstants;
-import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
-
-//import com.aetna.ahm.core.beans.RevealCardBean;
 import ahm.content.service.core.constants.AHMJsonServiceConstants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.day.cq.tagging.Tag;
+import com.day.cq.tagging.TagManager;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
-//import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
+
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
-import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import java.io.File;
-import java.util.ArrayList;
-
-import java.util.Iterator;
 import java.util.Map.Entry;
 
-
-@Model(
-        adaptables = {Resource.class},
-        adapters = ComponentExporter.class,
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
-)
-@Exporter(
-        name = ExporterConstants.SLING_MODEL_EXPORTER_NAME,
-        extensions = ExporterConstants.SLING_MODEL_EXTENSION,
-        options = {
-                @ExporterOption(name = "SerializationFeature.WRAP_ROOT_VALUE", value = "true")
-        }
-)
-@JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "BaseModel")
-
-
-public class BaseModel implements ComponentExporter {
-    private static Logger LOG = LoggerFactory.getLogger(BaseModel.class);
-    @SlingObject
-    Resource resource;
+public class BaseModel {
 
     @SlingObject
-    ResourceResolver resourceResolver;
+    protected Resource resource;
 
     @JsonProperty("Id")
     private String id;
@@ -86,10 +39,8 @@ public class BaseModel implements ComponentExporter {
         return name;
     }
 
-
     @JsonProperty("Title")
     private String title;
-
 
     @JsonProperty("Description")
     private String description;
@@ -100,56 +51,52 @@ public class BaseModel implements ComponentExporter {
     @JsonProperty("Name")
     private String name;
 
-    @JsonProperty("XfName")
-    private String xfname;
+    @JsonProperty("ContentType")
+    private String widgetType;
 
-    public String getXfname() {
-        return xfname;
+    public String getWidgetType() {
+        return widgetType;
     }
 
+    protected void Initialize() {
 
-    @PostConstruct
-    protected void invokepost() {
+        Resource parent = resource.getParent();
+        name = parent.getName();
+        tag = new String[0];
 
-
-        name = resource.getName();
-        xfname = resource.getParent().getName();
-        if ("master".equalsIgnoreCase(name)) {
-            name = StringUtils.EMPTY;
-        } else {
-            name = xfname;
-            xfname = StringUtils.EMPTY;
+        if (name.equalsIgnoreCase("master")) {
+            name = parent.getParent().getName();
         }
-        Resource xfResource = resource.getParent().getChild("jcr:content");
 
-        ModifiableValueMap mapxf = xfResource.adaptTo(ModifiableValueMap.class);
+        ValueMap values = resource.getValueMap();
 
-        for (Entry<String, Object> entry : mapxf.entrySet()) {
-
+        for (Entry<String, Object> entry : values.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-
 
             if (key.equals(AHMJsonServiceConstants.JCR_TITLE)) {
                 title = (String) value;
             } else if (key.equals(AHMJsonServiceConstants.JCR_DESC)) {
                 description = (String) value;
             } else if (key.equals(AHMJsonServiceConstants.CQ_TAGS)) {
-                tag = (String[]) value;
+                String[] tag1 = (String[]) value;
+                tag = new String[tag1.length];
+                int i = 0;
+                for (String eachTag : tag1) {
+                    TagManager tagManager = resource.getResourceResolver().adaptTo(TagManager.class);
+                    if (tagManager != null) {
+                        Tag newTag = tagManager.resolve(eachTag);
+                        if(newTag!=null) {
+                            tag[i] = newTag.getTitle();
+                            i++;
+                        }
+                    }
+                }
             }
+
             if (key.equals(AHMJsonServiceConstants.SLING_ALIAS)) {
                 id = (String) value;
             }
-
         }
     }
-
-
-    @Override
-    @JsonIgnore
-    public String getExportedType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
- 
