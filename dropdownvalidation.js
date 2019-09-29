@@ -13,11 +13,7 @@
 
                $('[name="./videoPath"]').val("/content/dam/dgtl-content/components/videos");
            }
-           if(selectedVal=="Upload"){
-               $('[name="./videoPath"]').val("");
-               $('[name="./videoid"]').val("");
-
-           }
+         
        }
     });
 
