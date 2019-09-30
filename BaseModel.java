@@ -1,8 +1,6 @@
 package ahm.content.service.core.models;
 
 import ahm.content.service.core.constants.AHMJsonServiceConstants;
-import com.day.cq.tagging.Tag;
-import com.day.cq.tagging.TagManager;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.apache.sling.api.resource.Resource;
@@ -79,19 +77,7 @@ public class BaseModel {
             } else if (key.equals(AHMJsonServiceConstants.JCR_DESC)) {
                 description = (String) value;
             } else if (key.equals(AHMJsonServiceConstants.CQ_TAGS)) {
-                String[] tag1 = (String[]) value;
-                tag = new String[tag1.length];
-                int i = 0;
-                for (String eachTag : tag1) {
-                    TagManager tagManager = resource.getResourceResolver().adaptTo(TagManager.class);
-                    if (tagManager != null) {
-                        Tag newTag = tagManager.resolve(eachTag);
-                        if(newTag!=null) {
-                            tag[i] = newTag.getTitle();
-                            i++;
-                        }
-                    }
-                }
+                tag = (String[]) value;
             }
 
             if (key.equals(AHMJsonServiceConstants.SLING_ALIAS)) {
