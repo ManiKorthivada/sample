@@ -53,14 +53,12 @@ public class VideoComponent implements ComponentExporter {
 
         ValueMap values = resource.getValueMap();
         videoType = values.get("videotype", String.class);
+        videoUrl = values.get("videoPath", String.class);
 
-        if (videoType.equalsIgnoreCase("external")) {
-            videoUrl = values.get("videoPathExternal", String.class);
-        } else {
-            videoUrl = values.get("videoPathUpload", String.class);
+        if ((videoType.equalsIgnoreCase("upload"))) {
             Resource videoResource = resource.getResourceResolver().getResource(videoUrl + "/jcr:content/metadata");
             if (null != videoResource) {
-                videoCC = videoResource.getValueMap().get("videoCC", String.class);
+                videoCC = videoResource.getValueMap().get("dclosedcaption", String.class);
             }
         }
     }
