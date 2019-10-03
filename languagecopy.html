@@ -1,0 +1,57 @@
+<sly data-sly-use.languagecopy="/libs/granite/sightly/templates/clientlib.html"
+     data-sly-call="${ languagecopy.js @ categories='cq.experience-fragments.components.languagecopy'}"/>
+
+<section id="language-copy-container"
+         data-sly-use.languagecopy="languagecopy.js"
+         data-page-path=" ${languagecopy.path}">
+    <section class="coral-Form-fieldset">
+        <div class="coral-Form-fieldwrapper">
+            <label class="coral-Form-fieldlabel">${'Language' @ i18n}</label>
+            <coral-select name="format" class="variation-lan">
+                <coral-select-item value="en">English</coral-select-item>
+                <coral-select-item value="es">Spanish</coral-select-item>
+            </coral-select>
+        </div>
+
+        <div class="coral-Form-fieldwrapper">
+            <label class="coral-Form-fieldlabel">${'Device' @ i18n}</label>
+            <coral-select name="format" class="variation-device">
+                <coral-select-item value="mob">Mobile</coral-select-item>
+                <coral-select-item value="web">Web</coral-select-item>
+            </coral-select>
+        </div>
+        <input is="coral-textfield" hidden="true" class="variation-path" name="field" value=${languagecopy.path}>
+
+    </section>
+    <section class="coral-Form-fieldset">
+        <button is="coral-button" variant="secondary" class="language-button">${'Create' @ i18n}</button>
+    </section>
+
+        <coral-alert variant="success" class="coral-success">
+              <coral-alert-header>Success!</coral-alert-header>
+              <coral-alert-content>New variation created.</coral-alert-content>
+   		 </coral-alert>
+
+    	<coral-alert variant="error" class="coral-error">
+          <coral-alert-header>Error</coral-alert-header>
+          <coral-alert-content>Variation cannot be created becasue of an error.</coral-alert-content>
+		</coral-alert>
+		
+		<coral-alert variant="error" class="coral-combination-error">
+          <coral-alert-header>Error</coral-alert-header>
+          <coral-alert-content>This variation exists.</coral-alert-content>
+		</coral-alert>
+    <table is="coral-table" id="variationData" style="height:200px">
+        <thead is="coral-table-head" sticky>
+        <tr is="coral-table-row">
+            <th is="coral-table-headercell">Variation Name</th>
+            <th is="coral-table-headercell">Variation Path</th>
+        </tr>
+        </thead>
+        <tbody is="coral-table-body">
+
+        </tbody>
+    </table>
+	</section>
+
+    <div data-sly-include="languageTable.html"></div>
