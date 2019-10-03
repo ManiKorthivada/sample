@@ -1,6 +1,7 @@
 package ahm.content.service.core.servlets;
 
 
+import ahm.content.service.core.services.VariationListingService;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import org.apache.commons.lang.StringUtils;
@@ -53,45 +54,15 @@ public class VariationListingServlet extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 2L;
 
-
     @Reference
-    ResourceResolverFactory resolverFactory;
+    VariationListingService variationListingService;
 
 
     @Override
 
     protected void doGet(final SlingHttpServletRequest req, final SlingHttpServletResponse resp) throws ServletException, IOException {
-
-
         resp.setContentType("application/json");
-
-        PageManager pageManager = req.getResourceResolver().adaptTo(PageManager.class);
-
-        String path = req.getParameter("path");
-
-        final String parentPath = ResourceUtil.getParent(path);
-        Page parentPage = pageManager.getPage(parentPath);
-
-        Iterator<Page> childPages = parentPage.listChildren();
-        JSONArray jsonArray = new JSONArray();
-
-        try {
-            while (childPages.hasNext()) {
-                Page childPage = childPages.next();
-                String name = childPage.getName();
-
-                if (!StringUtils.equals(name, "master")) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("variationName", name);
-                    jsonObject.put("variationPath", childPage.getPath()+".html");
-                    jsonArray.put(jsonObject);
-                }
-            }
-            resp.getWriter().print(jsonArray.toString());
-        } catch (JSONException e) {
-            logger.error("Error while fetching the variations",e);
-        }
-
+        resp.getWriter().print(variationListingService.getVariationList(req, resp));
     }
 }
 
