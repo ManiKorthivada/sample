@@ -13,33 +13,7 @@
         var $device = $container.find(".variation-device");
         var $path = $container.find(".variation-path");
         alertHide();
-
-        $.ajax({
-            type: "GET",
-            url: "/content/list-variation.json",
-            data: {
-            	path: $path.val()
-            	},
-            dataType: "json",
-            contentType: 'application/json',
-            success: function(data)
-            			{
-            			    drawTable(data);
-            			    console.log(data);
-			            },
-            error: function(response)
-			            {
-            	if (response.status == 409)
-            		{
-            			$(".coral-combination-error").show();
-            		}
-            	else
-            		{
-	            		$(".coral-error").show();
-            		}
-			            }
-          });
-
+        variationList($path.val());
 
     $container.on("change", ".variation-device, .variation-lan", function() {
         alertHide();
@@ -69,9 +43,10 @@
             success: function(data) 
             			{ 
 			            	$(".coral-success").show();
+                            variationList($path.val());
 			            },
-            error: function(response) 
-			            { 
+            error: function(response)
+			            {
             	if (response.status == 409)
             		{
             			$(".coral-combination-error").show();
@@ -103,8 +78,37 @@ function drawTable(data) {
     }
 }
 
+function variationList(pathValue){
+    $.ajax({
+                type: "GET",
+                url: "/content/list-variation.json",
+                data: {
+                    path: pathValue
+                    },
+                dataType: "json",
+                contentType: 'application/json',
+                success: function(data)
+                            {
+								$("#variationData tbody tr").remove();
+                                drawTable(data);
+                                console.log(data);
+                            },
+                error: function(response)
+                            {
+                    if (response.status == 409)
+                        {
+                            $(".coral-combination-error").show();
+                        }
+                    else
+                        {
+                            $(".coral-error").show();
+                        }
+                            }
+              });
+}
+
 function drawRow(rowData) {
-    var row = $('<tr is="coral-table-row" />')
+    var row = $('<tr class="eachrow" is="coral-table-row" />')
     $("#variationData").append(row); //this will append tr element to table... keep its reference for a while since we will add cels into it
     row.append($('<td is="coral-table-cell">' + rowData.variationName + '</td>'));
     row.append($('<td is="coral-table-cell"><a href = '+rowData.variationPath+'>'+rowData.variationPath+'</a></td>'));
