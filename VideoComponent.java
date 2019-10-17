@@ -1,27 +1,26 @@
 package ahm.content.service.core.models;
 
-import ahm.content.service.core.beans.AssetBean;
-import ahm.content.service.core.beans.RenditionBean;
+import ahm.content.service.core.utils.AHMUtil;
 import com.adobe.cq.export.json.ComponentExporter;
 import com.adobe.cq.export.json.ExporterConstants;
-import com.day.cq.dam.api.Asset;
-import com.day.cq.dam.api.Rendition;
+import com.day.cq.commons.Externalizer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.*;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
+import ahm.content.service.core.constants.AHMJsonServiceConstants;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
 
 @Model(
         adaptables = {Resource.class},
         adapters = ComponentExporter.class,
-        resourceType = "/apps/dgtl-content/components/content/video",
+        resourceType = {AHMJsonServiceConstants.VIDEO_RT},
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(
@@ -32,7 +31,7 @@ import java.util.*;
         }
 )
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@JsonRootName(value = "asset")
+@JsonRootName(value = "video")
 
 public class VideoComponent implements ComponentExporter {
 
@@ -53,45 +52,18 @@ public class VideoComponent implements ComponentExporter {
 
         ValueMap values = resource.getValueMap();
         videoType = values.get("videotype", String.class);
-        videoUrl = values.get("videoPath", String.class);
 
-        if ((videoType.equalsIgnoreCase("upload"))) {
+        if (videoType.equalsIgnoreCase("external")) {
+            videoUrl = values.get("videoPathExternal", String.class);
+        } else {
+            videoUrl = values.get("videoPathUpload", String.class);
             Resource videoResource = resource.getResourceResolver().getResource(videoUrl + "/jcr:content/metadata");
             if (null != videoResource) {
                 videoCC = videoResource.getValueMap().get("dclosedcaption", String.class);
             }
         }
-    }
+        videoUrl = AHMUtil.getPublishExternalUrl(resource.getResourceResolver(), videoUrl);
 
-    private List<RenditionBean> getRenditions() {
-        Resource videoResource = resource.getResourceResolver().getResource(videoUrl);
-        if (null != videoResource) {
-            Asset asset = videoResource.adaptTo(Asset.class);
-            List<RenditionBean> renditionBeanList = new ArrayList<>();
-            List<Rendition> renditions = asset.getRenditions();
-            Iterator<Rendition> renditionIterator = renditions.iterator();
-            while (renditionIterator.hasNext()) {
-                Rendition rendition = renditionIterator.next();
-                RenditionBean renditionBean = new RenditionBean();
-                renditionBean.setPath(rendition.getPath());
-                renditionBean.setFormat(rendition.getMimeType());
-                renditionBean.setSize(rendition.getSize());
-                renditionBeanList.add(renditionBean);
-            }
-            return renditionBeanList;
-        }
-        return null;
-    }
-
-    public AssetBean getAsset() {
-        AssetBean assetBean = new AssetBean();
-        Resource videoResource = resource.getResourceResolver().getResource(videoUrl);
-        if (null != videoResource) {
-            Asset asset = videoResource.adaptTo(Asset.class);
-            assetBean.setImagePath(asset.getOriginal().getPath());
-            assetBean.setRenditions(getRenditions());
-        }
-        return assetBean;
     }
 
     public String getVideoType() {
