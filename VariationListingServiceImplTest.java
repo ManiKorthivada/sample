@@ -1,14 +1,13 @@
-package com.sony.sie.shop.foundation.core.services;
+package ahm.content.service.core.services;
 
+import ahm.content.service.core.services.impl.VariationListingServiceImpl;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
-import com.sony.sie.shop.foundation.core.services.impl.VariationListingServiceImpl;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Iterator;
@@ -35,7 +34,7 @@ public class VariationListingServiceImplTest {
         Mockito.when(childPage.getPath()).thenReturn("/path");
         VariationListingService variationListingService = new VariationListingServiceImpl();
         String json = variationListingService.getVariationList(request,response);
-        Assert.assertEquals("[{\"variationName\":\"name\",\"variationPath\":\"/path.html\"}]",json);
+        Assert.assertEquals("[{\"variationName\":\"name\",\"variationPath\":\"/editor.html/path.html\"}]",json);
     }
 
 }

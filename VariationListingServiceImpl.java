@@ -45,7 +45,7 @@ public class VariationListingServiceImpl implements VariationListingService {
                 if (!StringUtils.equals(name, "master")) {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("variationName", name);
-                    jsonObject.put("variationPath", childPage.getPath() + ".html");
+                    jsonObject.put("variationPath", "/editor.html"+childPage.getPath() + ".html");
                     jsonArray.put(jsonObject);
                 }
             }
