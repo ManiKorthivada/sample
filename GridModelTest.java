@@ -1,36 +1,28 @@
 package ahm.content.service.core.models;
 
-import com.day.cq.tagging.Tag;
-import com.day.cq.tagging.TagManager;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.api.support.membermodification.MemberModifier;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({GridModel.class})
 public class GridModelTest {
 
-    @InjectMocks
-    private GridModel gridModel;
+
+    private GridModel gridModel = new GridModel();
 
     SlingHttpServletRequest request;
 
     @Before
-    public void setup() throws IllegalArgumentException, IllegalAccessException {
+    public void setup() throws Exception {
         request = Mockito.mock(SlingHttpServletRequest.class);
-        MemberModifier.field(GridModel.class,"request").set(gridModel,request);
+        Field builderField = GridModel.class.getDeclaredField("request");
+        builderField.setAccessible(true);
+        builderField.set(gridModel, request);
     }
 
     @Test
