@@ -1,6 +1,7 @@
 package ahm.content.service.core.services;
 
 import ahm.content.service.core.constants.AHMJsonServiceConstants;
+import ahm.content.service.core.models.HtmlComponent;
 import ahm.content.service.core.models.RecipeModel;
 import ahm.content.service.core.services.impl.WidgetServiceImpl;
 import com.adobe.cq.export.json.ExporterConstants;
@@ -25,16 +26,15 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.jcr.Session;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({WidgetService.class})
 public class WidgetServiceImplTest {
 
-    @InjectMocks
-    WidgetServiceImpl widgetService;
+
+    WidgetServiceImpl widgetService = new WidgetServiceImpl();
 
     private ResourceResolverFactory resolverFactory;
     private QueryBuilder queryBuilder;
@@ -42,13 +42,20 @@ public class WidgetServiceImplTest {
 
 
     @Before
-    public void setup() throws IllegalArgumentException, IllegalAccessException {
+    public void setup() throws Exception {
         resolverFactory = Mockito.mock(ResourceResolverFactory.class);
         queryBuilder = Mockito.mock(QueryBuilder.class);
         modelFactory = Mockito.mock(ModelFactory.class);
-        MemberModifier.field(WidgetServiceImpl.class,"resolverFactory").set(widgetService,resolverFactory);
-        MemberModifier.field(WidgetServiceImpl.class,"queryBuilder").set(widgetService,queryBuilder);
-        MemberModifier.field(WidgetServiceImpl.class,"modelFactory").set(widgetService,modelFactory);
+
+        Field builderField = WidgetServiceImpl.class.getDeclaredField("resolverFactory");
+        builderField.setAccessible(true);
+        builderField.set(widgetService, resolverFactory);
+        Field builderField1 = WidgetServiceImpl.class.getDeclaredField("queryBuilder");
+        builderField1.setAccessible(true);
+        builderField1.set(widgetService, queryBuilder);
+        Field builderField2 = WidgetServiceImpl.class.getDeclaredField("modelFactory");
+        builderField2.setAccessible(true);
+        builderField2.set(widgetService, modelFactory);
     }
 
     @Test

@@ -11,22 +11,30 @@ import org.powermock.api.support.membermodification.MemberModifier;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({RevealCardComponent.class})
+import java.lang.reflect.Field;
+
 public class RevealCardComponentTest {
 
-    @InjectMocks
-    private RevealCardComponent revealCardComponent;
+
+    private RevealCardComponent revealCardComponent = new RevealCardComponent();
 
     Resource resource;
 
     @Before
-    public void setup() throws IllegalArgumentException, IllegalAccessException {
+    public void setup() throws Exception {
         resource = Mockito.mock(Resource.class);
-        MemberModifier.field(RevealCardComponent.class,"resource").set(revealCardComponent,resource);
-        MemberModifier.field(RevealCardComponent.class,"cardTitle").set(revealCardComponent,"Title");
-        MemberModifier.field(RevealCardComponent.class,"cardMessage").set(revealCardComponent,"Message");
-        MemberModifier.field(RevealCardComponent.class,"sortOrder").set(revealCardComponent,2);
+        Field builderField = RevealCardComponent.class.getDeclaredField("resource");
+        builderField.setAccessible(true);
+        builderField.set(revealCardComponent, resource);
+        Field builderField1 = RevealCardComponent.class.getDeclaredField("cardTitle");
+        builderField1.setAccessible(true);
+        builderField1.set(revealCardComponent, "Title");
+        Field builderField2 = RevealCardComponent.class.getDeclaredField("cardMessage");
+        builderField2.setAccessible(true);
+        builderField2.set(revealCardComponent, "Message");
+        Field builderField3 = RevealCardComponent.class.getDeclaredField("sortOrder");
+        builderField3.setAccessible(true);
+        builderField3.set(revealCardComponent, 2);
     }
     @Test
     public void test() throws Exception{

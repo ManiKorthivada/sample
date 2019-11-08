@@ -1,5 +1,6 @@
 package ahm.content.service.core.servlets;
 
+import ahm.content.service.core.services.impl.WidgetServiceImpl;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import junitx.util.PrivateAccessor;
@@ -21,33 +22,31 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ContentVariationServlet.class)
 public class ContentVariationServletTest {
 
-    @InjectMocks
+
     private ContentVariationServlet contentVariationServlet;
 
-    @Mock
     private SlingHttpServletRequest request;
-
-    @Mock
     private SlingHttpServletResponse response;
-
-    @Mock
     private ResourceResolverFactory resourceResolverFactory;
 
     @Before
     public void setUp() throws Exception {
         contentVariationServlet = new ContentVariationServlet();
-        PrivateAccessor.setField(contentVariationServlet, "resolverFactory", resourceResolverFactory);
+        resourceResolverFactory = mock(ResourceResolverFactory.class);
         request = mock(SlingHttpServletRequest.class);
         response = mock(SlingHttpServletResponse.class);
+
+        Field builderField = ContentVariationServlet.class.getDeclaredField("resolverFactory");
+        builderField.setAccessible(true);
+        builderField.set(contentVariationServlet, resourceResolverFactory);
     }
 
     @Test

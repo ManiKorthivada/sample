@@ -1,7 +1,9 @@
-package com.sony.sie.shop.foundation.core.servlets;
+package ahm.content.service.core.servlets;
 
 
-import com.sony.sie.shop.foundation.core.services.VariationListingService;
+import ahm.content.service.core.models.HtmlComponent;
+import ahm.content.service.core.services.VariationListingService;
+import ahm.content.service.core.services.impl.VariationListingServiceImpl;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -17,31 +19,31 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(VariationListingServlet.class)
+
 public class VariationListingServletTest {
 
-    @InjectMocks
+
     private VariationListingServlet variationListingServlet;
 
-    @Mock
+
     VariationListingService variationListingService;
-
-    @Mock
     private SlingHttpServletRequest request;
-
-    @Mock
     private SlingHttpServletResponse response;
 
     @Before
     public void setUp() throws Exception {
         variationListingServlet = new VariationListingServlet();
-        PrivateAccessor.setField(variationListingServlet, "variationListingService", variationListingService);
+        variationListingService = mock(VariationListingServiceImpl.class);
         request = mock(SlingHttpServletRequest.class);
         response = mock(SlingHttpServletResponse.class);
+
+        Field builderField = VariationListingServlet.class.getDeclaredField("variationListingService");
+        builderField.setAccessible(true);
+        builderField.set(variationListingServlet, variationListingService);
     }
 
     @Test
