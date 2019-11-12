@@ -1,8 +1,8 @@
 package ahm.content.service.core.models;
 
-import junitx.util.PrivateAccessor;
+import com.day.cq.commons.Externalizer;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,40 +13,51 @@ import org.powermock.api.support.membermodification.MemberModifier;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.Iterator;
+import java.lang.reflect.Field;
 
-public class RevealCardModelTest {
+public class RevealCardComponentTest {
 
 
-    private RevealCardModel revealCardModel;
+    private RevealCardComponent revealCardComponent = new RevealCardComponent();
 
     Resource resource;
 
     @Before
-    public void setup() throws Exception{
+    public void setup() throws Exception {
         resource = Mockito.mock(Resource.class);
-        revealCardModel = new RevealCardModel();
-        PrivateAccessor.setField(revealCardModel, "resource", resource);
+        Field builderField = RevealCardComponent.class.getDeclaredField("resource");
+        builderField.setAccessible(true);
+        builderField.set(revealCardComponent, resource);
+        Field builderField1 = RevealCardComponent.class.getDeclaredField("cardTitle");
+        builderField1.setAccessible(true);
+        builderField1.set(revealCardComponent, "Title");
+        Field builderField2 = RevealCardComponent.class.getDeclaredField("cardMessage");
+        builderField2.setAccessible(true);
+        builderField2.set(revealCardComponent, "Message");
+        Field builderField4 = RevealCardComponent.class.getDeclaredField("cardImage");
+        builderField4.setAccessible(true);
+        builderField4.set(revealCardComponent, "cardImage");
+        Field builderField3 = RevealCardComponent.class.getDeclaredField("sortOrder");
+        builderField3.setAccessible(true);
+        builderField3.set(revealCardComponent, 2);
     }
-
     @Test
     public void test() throws Exception{
-        Resource parent = Mockito.mock(Resource.class);
-        Mockito.when(resource.getParent()).thenReturn(parent);
-        Mockito.when(parent.getName()).thenReturn("parentName");
-        Resource revealModelResource = Mockito.mock(Resource.class);
-        Mockito.when(resource.getChild("root/responsivegrid/")).thenReturn(revealModelResource);
-        Iterator<Resource> iteratorExp = Mockito.mock(Iterator.class);
-        Mockito.when(revealModelResource.listChildren()).thenReturn(iteratorExp);
-        Mockito.when(iteratorExp.hasNext()).thenReturn(true).thenReturn(false);
-        Resource childResource =Mockito.mock(Resource.class);
-        Mockito.when(iteratorExp.next()).thenReturn(childResource);
-        RevealCardComponent map = Mockito.mock(RevealCardComponent.class);
-        Mockito.when(childResource.adaptTo(RevealCardComponent.class)).thenReturn(map);
-        ValueMap values = Mockito.mock(ValueMap.class);
-        Mockito.when(resource.getValueMap()).thenReturn(values);
-        revealCardModel.invokepost();
-        Assert.assertEquals("Reveal Card",revealCardModel.getWidgetType());
-
+        revealCardComponent.setImageName("Image Name");
+        revealCardComponent.setCardImage("cardImage");
+        revealCardComponent.setCardTitle("Title");
+        revealCardComponent.setCardMessage("Message");
+        revealCardComponent.setSortOrder(2);
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        Mockito.when(resource.getResourceResolver()).thenReturn(resourceResolver);
+        Externalizer externalizer = Mockito.mock(Externalizer.class);
+        Mockito.when(resourceResolver.adaptTo(Externalizer.class)).thenReturn(externalizer);
+        Mockito.when(resourceResolver.map("cardImage")).thenReturn("cardImage");
+        Mockito.when(externalizer.externalLink(resourceResolver, Externalizer.LOCAL, "cardImage")).thenReturn("cardImage");
+        Assert.assertEquals("Title",revealCardComponent.getCardTitle());
+        Assert.assertEquals("Message",revealCardComponent.getCardMessage());
+        Assert.assertEquals("Image Name",revealCardComponent.getImageName());
+        Assert.assertEquals("cardImage",revealCardComponent.getCardImage());
+        Assert.assertEquals(2,revealCardComponent.getSortOrder());
     }
 }
