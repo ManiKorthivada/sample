@@ -1,6 +1,10 @@
 package ahm.content.service.core.models;
 
+import ahm.content.service.core.constants.AHMJsonServiceConstants;
+import com.day.cq.tagging.Tag;
+import com.day.cq.tagging.TagManager;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,6 +40,14 @@ public class BaseModelTest {
         objectMap.put("jcr:title","tile");
         objectMap.put("jcr:description","desc");
         objectMap.put("sling:alias","123456");
+        String[] tag = {"tag1"};
+        objectMap.put(AHMJsonServiceConstants.CQ_TAGS,tag);
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        Mockito.when(resource.getResourceResolver()).thenReturn(resourceResolver);
+        TagManager tagManager = Mockito.mock(TagManager.class);
+        Mockito.when(resourceResolver.adaptTo(TagManager.class)).thenReturn(tagManager);
+        Tag newTag = Mockito.mock(Tag.class);
+        Mockito.when(tagManager.resolve("tag1")).thenReturn(newTag);
         Set<Map.Entry<String, Object>> set = new HashSet<>();
         Iterator<Map.Entry<String, Object>> iterator = objectMap.entrySet().iterator();
         while (iterator.hasNext()){
@@ -47,6 +59,6 @@ public class BaseModelTest {
         Assert.assertEquals("123456",baseModel.getId());
         Assert.assertEquals("parentName",baseModel.getName());
         Assert.assertEquals("tile",baseModel.getTitle());
-        Assert.assertEquals(0,baseModel.getTag().length);
+        Assert.assertEquals(1,baseModel.getTag().length);
     }
 }
