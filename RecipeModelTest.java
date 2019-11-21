@@ -37,4 +37,17 @@ public class RecipeModelTest {
         recipeModel.invokepost();
         Assert.assertEquals("parentName", recipeModel.getName());
     }
+
+    @Test
+    public void test_resource_null() throws Exception {
+        Resource parent = Mockito.mock(Resource.class);
+        Mockito.when(resource.getParent()).thenReturn(parent);
+        Mockito.when(parent.getName()).thenReturn("");
+        Resource videoModelResource = Mockito.mock(Resource.class);
+        Mockito.when(resource.getChild("root/responsivegrid/recipe")).thenReturn(null);
+        ValueMap values = Mockito.mock(ValueMap.class);
+        Mockito.when(resource.getValueMap()).thenReturn(values);
+        recipeModel.invokepost();
+        Assert.assertEquals("", recipeModel.getName());
+    }
 }

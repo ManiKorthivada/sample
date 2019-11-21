@@ -1,34 +1,57 @@
-package com.aetna.ahm.core.models.qr;
+package ahm.content.service.core.models;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.support.membermodification.MemberModifier;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(AssetMetadataModel.class)
+import java.lang.reflect.Field;
+
 public class AssetMetadataModelTest {
 
-    private AssetMetadataModel assetMetadataModel;
+
+    private AssetMetadataModel assetMetadataModel = new AssetMetadataModel();
+
+    ResourceResolver resolver;
+
+    @Before
+    public void setup() throws Exception {
+        resolver = Mockito.mock(ResourceResolver.class);
+        Field builderField = AssetMetadataModel.class.getDeclaredField("resolver");
+        builderField.setAccessible(true);
+        builderField.set(assetMetadataModel, resolver);
+        Field builderField1 = AssetMetadataModel.class.getDeclaredField("videopath");
+        builderField1.setAccessible(true);
+        builderField1.set(assetMetadataModel, "videopath");
+        Field builderField2 = AssetMetadataModel.class.getDeclaredField("title");
+        builderField2.setAccessible(true);
+        builderField2.set(assetMetadataModel, "");
+    }
 
     @Test
     public void test() throws Exception{
-        assetMetadataModel = Mockito.spy(new AssetMetadataModel());
-        ResourceResolver resolver = Mockito.mock(ResourceResolver.class);
-        MemberModifier.field(AssetMetadataModel.class, "videopath").set(assetMetadataModel, "videopath");
-        MemberModifier.field(AssetMetadataModel.class, "resolver").set(assetMetadataModel, resolver);
+        Resource imageResource = Mockito.mock(Resource.class);
+        Mockito.when(resolver.getResource("videopath")).thenReturn(imageResource);
+        Mockito.when(imageResource.getName()).thenReturn("name");
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resolver.getResource("videopath/jcr:content/metadata")).thenReturn(resource);
         ValueMap valueMap = Mockito.mock(ValueMap.class);
         Mockito.when(resource.getValueMap()).thenReturn(valueMap);
-        Mockito.when(valueMap.get("videoCC")).thenReturn("ccMockVideo");
+        Mockito.when(valueMap.get("dclosedcaption")).thenReturn("ccVideo");
         assetMetadataModel.init();
-        Assert.assertEquals("ccMockVideo",assetMetadataModel.getVideoCCVal());
+        Assert.assertEquals("name",assetMetadataModel.getTitle());
+        Assert.assertEquals("ccVideo",assetMetadataModel.getVideoCCVal());
+    }
+
+    @Test
+    public void test_resource_null() throws Exception{
+        Mockito.when(resolver.getResource("videopath")).thenReturn(null);
+        assetMetadataModel.init();
+        Assert.assertEquals("",assetMetadataModel.getTitle());
+        Mockito.when(resolver.getResource("videopath/jcr:content/metadata")).thenReturn(null);
+        Assert.assertNull(assetMetadataModel.getVideoCCVal());
     }
 }

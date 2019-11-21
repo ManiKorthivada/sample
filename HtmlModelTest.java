@@ -41,4 +41,17 @@ public class HtmlModelTest {
         htmlModel.invokepost();
         Assert.assertEquals("parentName",htmlModel.getName());
     }
+
+    @Test
+    public void test_null_resource() throws Exception{
+        Resource parent = Mockito.mock(Resource.class);
+        Mockito.when(resource.getParent()).thenReturn(parent);
+        Mockito.when(parent.getName()).thenReturn("");
+        Resource videoModelResource = Mockito.mock(Resource.class);
+        Mockito.when(resource.getChild("root/responsivegrid/html")).thenReturn(null);
+        ValueMap values = Mockito.mock(ValueMap.class);
+        Mockito.when(resource.getValueMap()).thenReturn(values);
+        htmlModel.invokepost();
+        Assert.assertEquals("",htmlModel.getName());
+    }
 }

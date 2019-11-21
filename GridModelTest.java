@@ -37,4 +37,15 @@ public class GridModelTest {
         gridModel.init();
         Assert.assertEquals(1,gridModel.getNoOfComponents());
     }
+
+    @Test
+    public void test_null_resource() throws Exception{
+        Resource resource = Mockito.mock(Resource.class);
+        Mockito.when(request.getResource()).thenReturn(resource);
+        Mockito.when(resource.getResourceType()).thenReturn("dgtl-content/components/structure/xfpagewidget1");
+        Iterator<Resource> iterator = Mockito.mock(Iterator.class);
+        Mockito.when(resource.listChildren()).thenReturn(iterator);
+        gridModel.init();
+        Assert.assertEquals(0,gridModel.getNoOfComponents());
+    }
 }

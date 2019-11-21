@@ -1,5 +1,6 @@
 package ahm.content.service.core.models;
 
+import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.junit.Assert;
@@ -14,19 +15,18 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Iterator;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({RevealCardModel.class})
 public class RevealCardModelTest {
 
-    @InjectMocks
+
     private RevealCardModel revealCardModel;
 
     Resource resource;
 
     @Before
-    public void setup() throws IllegalArgumentException, IllegalAccessException {
+    public void setup() throws Exception{
         resource = Mockito.mock(Resource.class);
-        MemberModifier.field(RevealCardModel.class,"resource").set(revealCardModel,resource);
+        revealCardModel = new RevealCardModel();
+        PrivateAccessor.setField(revealCardModel, "resource", resource);
     }
 
     @Test
@@ -48,5 +48,20 @@ public class RevealCardModelTest {
         revealCardModel.invokepost();
         Assert.assertEquals("Reveal Card",revealCardModel.getWidgetType());
 
+    }
+
+    @Test
+    public void test_null() throws Exception{
+        Resource parent = Mockito.mock(Resource.class);
+        Mockito.when(resource.getParent()).thenReturn(parent);
+        Mockito.when(parent.getName()).thenReturn("");
+        Resource revealModelResource = Mockito.mock(Resource.class);
+        Mockito.when(resource.getChild("root/responsivegrid/")).thenReturn(revealModelResource);
+        Iterator<Resource> iteratorExp = Mockito.mock(Iterator.class);
+        Mockito.when(revealModelResource.listChildren()).thenReturn(iteratorExp);
+        ValueMap values = Mockito.mock(ValueMap.class);
+        Mockito.when(resource.getValueMap()).thenReturn(values);
+        revealCardModel.invokepost();
+        Assert.assertEquals("",revealCardModel.getName());
     }
 }

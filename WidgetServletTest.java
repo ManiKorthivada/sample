@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.UUID;
@@ -55,5 +56,21 @@ public class WidgetServletTest {
         when(widgetService.GetWidgetById(uuid,resolver)).thenReturn("response");
         widgetServlet.doGet(request,response);
         verify(printWriter,times(1)).print("response");
+    }
+
+    @Test
+    public void doGet_Else() throws Exception {
+        PrintWriter printWriter = mock(PrintWriter.class);
+        when(response.getWriter()).thenReturn(printWriter);
+        ResourceResolver resolver = mock(ResourceResolver.class);
+        when(request.getResourceResolver()).thenReturn(resolver);
+        RequestPathInfo requestPathInfo = mock(RequestPathInfo.class);
+        when(request.getRequestPathInfo()).thenReturn(requestPathInfo);
+        when(requestPathInfo.getSuffix()).thenReturn("/cb87a8fb-0b78-4e97-b620-b8355d43689b");
+        UUID uuid = UUID.fromString("cb87a8fb-0b78-4e97-b620-b8355d43689b");
+        when(widgetService.GetWidgetById(uuid,resolver)).thenReturn("");
+        widgetServlet.doGet(request,response);
+        verify(printWriter,times(0)).print("response");
+        verify(response,times(1)).sendError(HttpServletResponse.SC_NOT_FOUND,"Widget cannot be found.");
     }
 }
