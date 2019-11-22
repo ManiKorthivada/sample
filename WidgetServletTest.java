@@ -59,6 +59,21 @@ public class WidgetServletTest {
     }
 
     @Test
+    public void doGet_test_not_with_slash() throws Exception {
+        PrintWriter printWriter = mock(PrintWriter.class);
+        when(response.getWriter()).thenReturn(printWriter);
+        ResourceResolver resolver = mock(ResourceResolver.class);
+        when(request.getResourceResolver()).thenReturn(resolver);
+        RequestPathInfo requestPathInfo = mock(RequestPathInfo.class);
+        when(request.getRequestPathInfo()).thenReturn(requestPathInfo);
+        when(requestPathInfo.getSuffix()).thenReturn("cb87a8fb-0b78-4e97-b620-b8355d43689b");
+        UUID uuid = UUID.fromString("cb87a8fb-0b78-4e97-b620-b8355d43689b");
+        when(widgetService.GetWidgetById(uuid,resolver)).thenReturn("response");
+        widgetServlet.doGet(request,response);
+        verify(printWriter,times(1)).print("response");
+    }
+
+    @Test
     public void doGet_Else() throws Exception {
         PrintWriter printWriter = mock(PrintWriter.class);
         when(response.getWriter()).thenReturn(printWriter);
