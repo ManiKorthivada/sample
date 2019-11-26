@@ -63,4 +63,43 @@ public class VideoComponentTest {
         Assert.assertEquals("/pathUpload",videoComponent.getVideoUrl());
         Assert.assertEquals("upload",videoComponent.getVideoType());
     }
+
+    @Test
+    public void test_upload_emptyCC() throws Exception{
+        ValueMap values = Mockito.mock(ValueMap.class);
+        Mockito.when(resource.getValueMap()).thenReturn(values);
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        Externalizer externalizer = Mockito.mock(Externalizer.class);
+        Mockito.when(resourceResolver.adaptTo(Externalizer.class)).thenReturn(externalizer);
+
+        Mockito.when(values.get("videotype", String.class)).thenReturn("upload");
+        Mockito.when(values.get("videoPath",String.class)).thenReturn("/pathUpload");
+        Mockito.when(resource.getResourceResolver()).thenReturn(resourceResolver);
+        Resource videoResource = Mockito.mock(Resource.class);
+        Mockito.when(resourceResolver.getResource("/pathUpload/jcr:content/metadata")).thenReturn(videoResource);
+        Mockito.when(videoResource.getValueMap()).thenReturn(values);
+        Mockito.when(values.get("dclosedcaption",String.class)).thenReturn("");
+        Mockito.when(resourceResolver.map("videoCC")).thenReturn("");
+        videoComponent.invokepost();
+        Assert.assertEquals("upload",videoComponent.getVideoType());
+    }
+    @Test
+    public void test_upload_emptyVideoUrl() throws Exception{
+        ValueMap values = Mockito.mock(ValueMap.class);
+        Mockito.when(resource.getValueMap()).thenReturn(values);
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        Externalizer externalizer = Mockito.mock(Externalizer.class);
+        Mockito.when(resourceResolver.adaptTo(Externalizer.class)).thenReturn(externalizer);
+
+        Mockito.when(values.get("videotype", String.class)).thenReturn("upload");
+        Mockito.when(values.get("videoPath",String.class)).thenReturn("");
+        Mockito.when(resource.getResourceResolver()).thenReturn(resourceResolver);
+        Resource videoResource = Mockito.mock(Resource.class);
+        Mockito.when(resourceResolver.getResource("/jcr:content/metadata")).thenReturn(videoResource);
+        Mockito.when(videoResource.getValueMap()).thenReturn(values);
+        Mockito.when(values.get("dclosedcaption",String.class)).thenReturn("");
+        Mockito.when(resourceResolver.map("videoCC")).thenReturn("");
+        videoComponent.invokepost();
+        Assert.assertEquals("upload",videoComponent.getVideoType());
+    }
 }
