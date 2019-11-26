@@ -35,6 +35,10 @@ public class VideoComponentTest {
         Mockito.when(resource.getResourceResolver()).thenReturn(resourceResolver);
         Mockito.when(values.get("videotype", String.class)).thenReturn("external");
         Mockito.when(values.get("videoPath",String.class)).thenReturn("/pathExternal");
+        Externalizer externalizer = Mockito.mock(Externalizer.class);
+        Mockito.when(resourceResolver.adaptTo(Externalizer.class)).thenReturn(externalizer);
+        Mockito.when(externalizer.externalLink(resourceResolver, Externalizer.LOCAL, "/pathExternal")).thenReturn("/pathExternal");
+        Mockito.when(resourceResolver.map("/pathExternal")).thenReturn("/pathExternal");
         videoComponent.invokepost();
         Assert.assertEquals("external",videoComponent.getVideoType());
         Assert.assertEquals("/pathExternal",videoComponent.getVideoUrl());
@@ -48,10 +52,13 @@ public class VideoComponentTest {
         Mockito.when(values.get("dclosedcaption",String.class)).thenReturn("videoCC");
         Mockito.when(resourceResolver.map("videoCC")).thenReturn("videoCC");
         Mockito.when(resourceResolver.map("/pathUpload")).thenReturn("/pathUpload");
-        Externalizer externalizer = Mockito.mock(Externalizer.class);
-        Mockito.when(resourceResolver.adaptTo(Externalizer.class)).thenReturn(externalizer);
+
         Mockito.when(externalizer.externalLink(resourceResolver, Externalizer.LOCAL, "videoCC")).thenReturn("videoCC");
         Mockito.when(externalizer.externalLink(resourceResolver, Externalizer.LOCAL, "/pathUpload")).thenReturn("/pathUpload");
+        videoComponent.invokepost();
+        Assert.assertEquals("/pathUpload",videoComponent.getVideoUrl());
+        Assert.assertEquals("upload",videoComponent.getVideoType());
+        Mockito.when(resourceResolver.getResource("/pathUpload/jcr:content/metadata")).thenReturn(null);
         videoComponent.invokepost();
         Assert.assertEquals("/pathUpload",videoComponent.getVideoUrl());
         Assert.assertEquals("upload",videoComponent.getVideoType());

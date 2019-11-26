@@ -53,4 +53,23 @@ public class VariationListingServiceImplTest {
         String json = variationListingService.getVariationList(request,response);
         Assert.assertEquals("[]",json);
     }
+
+    @Test
+    public void test_empty_childPages(){
+        SlingHttpServletRequest request = Mockito.mock(SlingHttpServletRequest.class);
+        SlingHttpServletResponse response = Mockito.mock(SlingHttpServletResponse.class);
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        Mockito.when(request.getResourceResolver()).thenReturn(resourceResolver);
+        PageManager pageManager = Mockito.mock(PageManager.class);
+        Mockito.when(resourceResolver.adaptTo(PageManager.class)).thenReturn(pageManager);
+        Mockito.when(request.getParameter("path")).thenReturn("/content/parent/child");
+        Page parentPage = Mockito.mock(Page.class);
+        Mockito.when(pageManager.getPage("/content/parent")).thenReturn(parentPage);
+        Iterator<Page> childPages = Mockito.mock(Iterator.class);
+        Mockito.when(parentPage.listChildren()).thenReturn(childPages);
+        Mockito.when(childPages.hasNext()).thenReturn(false);
+        VariationListingService variationListingService = new VariationListingServiceImpl();
+        String json = variationListingService.getVariationList(request,response);
+        Assert.assertEquals("[]",json);
+    }
 }

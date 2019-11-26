@@ -83,7 +83,7 @@ public class WidgetServiceImplTest {
     }
 
     @Test
-    public void test_null_type() throws Exception{
+    public void test_Empty_type() throws Exception{
         ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
         UUID uuid =UUID.fromString("cb87a8fb-0b78-4e97-b620-b8355d43689b");
         Query query =Mockito.mock(Query.class);
@@ -98,6 +98,39 @@ public class WidgetServiceImplTest {
         ValueMap resourceValues = Mockito.mock(ValueMap.class);
         Mockito.when(resource.getValueMap()).thenReturn(resourceValues);
         Mockito.when(resourceValues.get(AHMJsonServiceConstants.SLING_RT, String.class)).thenReturn("");
+        Assert.assertNull(widgetService.GetWidgetById(uuid,resourceResolver));
+    }
+
+    @Test
+    public void test_null_type() throws Exception{
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        UUID uuid =UUID.fromString("cb87a8fb-0b78-4e97-b620-b8355d43689b");
+        Query query =Mockito.mock(Query.class);
+        Mockito.when(queryBuilder.createQuery(Matchers.any(), Matchers.any())).thenReturn(query);
+        SearchResult result =Mockito.mock(SearchResult.class);
+        Mockito.when(query.getResult()).thenReturn(result);
+        Iterator<Resource> resources = Mockito.mock(Iterator.class);
+        Mockito.when(result.getResources()).thenReturn(resources);
+        Mockito.when(resources.hasNext()).thenReturn(true);
+        Resource resource = Mockito.mock(Resource.class);
+        Mockito.when(resources.next()).thenReturn(resource);
+        ValueMap resourceValues = Mockito.mock(ValueMap.class);
+        Mockito.when(resource.getValueMap()).thenReturn(resourceValues);
+        Mockito.when(resourceValues.get(AHMJsonServiceConstants.SLING_RT, String.class)).thenReturn(null);
+        Assert.assertNull(widgetService.GetWidgetById(uuid,resourceResolver));
+    }
+
+    @Test
+    public void test_resources_empty() throws Exception{
+        ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        UUID uuid =UUID.fromString("cb87a8fb-0b78-4e97-b620-b8355d43689b");
+        Query query =Mockito.mock(Query.class);
+        Mockito.when(queryBuilder.createQuery(Matchers.any(), Matchers.any())).thenReturn(query);
+        SearchResult result =Mockito.mock(SearchResult.class);
+        Mockito.when(query.getResult()).thenReturn(result);
+        Iterator<Resource> resources = Mockito.mock(Iterator.class);
+        Mockito.when(result.getResources()).thenReturn(resources);
+        Mockito.when(resources.hasNext()).thenReturn(false);
         Assert.assertNull(widgetService.GetWidgetById(uuid,resourceResolver));
     }
 }
