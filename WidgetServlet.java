@@ -2,26 +2,20 @@ package ahm.content.service.core.servlets;
 
 import ahm.content.service.core.services.WidgetService;
 
-import com.day.cq.search.PredicateGroup;
-import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;
-import com.day.cq.search.result.Hit;
-import com.day.cq.search.result.SearchResult;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.*;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.*;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -29,15 +23,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+@Component(
+        name = "DAM Expose Servlet",
+        immediate = true,
+        service = Servlet.class,
+        property = {
+                "sling.servlet.resourceTypes=digital/servlet",
+                "sling.servlet.extensions=json"
+        }
+)
 
-/**
- * This also has Jackson Sling Model Exporter
- *
- * @author Active Health Management
- */
-@Component(name = "DAM Expose Servlet", immediate = true, service = Servlet.class, property = {
-        "sling.servlet.resourceTypes=ahm/servlet",
-        "sling.servlet.extensions=json"})
 public class WidgetServlet extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1;
@@ -53,8 +48,7 @@ public class WidgetServlet extends SlingAllMethodsServlet {
     private WidgetService widgetService;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
@@ -64,20 +58,32 @@ public class WidgetServlet extends SlingAllMethodsServlet {
 
         String id = request.getRequestPathInfo().getSuffix();
         if (StringUtils.startsWith(id, "/")) {
+
             id = StringUtils.substring(id, 1);
         }
-        UUID uid = UUID.fromString(id);
-
-        try {
-            String result = widgetService.GetWidgetById(uid, resolver);
-            if(StringUtils.isNotBlank(result)){
-                out.print(result);
-            }else{
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        String[] suffixParam = id.split("/");
+        UUID uid = null;
+        String result = StringUtils.EMPTY;
+        if (suffixParam.length > 1) {
+            String renditionParam = suffixParam[1];
+            uid = UUID.fromString(suffixParam[0]);
+            try {
+                result = widgetService.GetOriginalRenditionById(uid, resolver, renditionParam);
+            } catch (Exception e) {
+                logger.error("Exception in the Wigetservlet while pulling the widget information {}", e);
             }
-
-        } catch (Exception e) {
-            logger.error("Exception in the Wigetservlet while pulling the widget information {}",e);
+        } else {
+            try {
+                uid = UUID.fromString(id);
+                result = widgetService.GetWidgetById(uid, resolver).toString();
+            } catch (Exception e) {
+                logger.error("Exception in the Wigetservlet while pulling the widget information {}", e);
+            }
+        }
+        if (StringUtils.isNotBlank(result)) {
+            out.print(result);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Widget cannot be found.");
         }
     }
 }
