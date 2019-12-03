@@ -99,6 +99,7 @@ public class WidgetServiceImpl implements WidgetService {
 
         try {
             widget = modelFactory.exportModelForResource(resource, ExporterConstants.SLING_MODEL_EXPORTER_NAME, String.class, new HashMap<String, String>());
+
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
         }
@@ -122,11 +123,12 @@ public class WidgetServiceImpl implements WidgetService {
                 imageJson.put(imagePath);
                 Resource imageResource = resourceResolver.getResource(imagePath);
                 renditionJson = generateRenditionsArray(imageResource);
+                componentObject.put("imageRenditions",renditionJson);
             }
             if (StringUtils.isNotBlank(renditionParam) && StringUtils.equalsIgnoreCase(renditionParam, "original")) {
                 return imageJson.toString();
             } else if (StringUtils.isNotBlank(renditionParam) && StringUtils.equalsIgnoreCase(renditionParam, "renditions")) {
-                return renditionJson.toString();
+                return jsonObject.toString();
             }
         }
         return null;
@@ -138,13 +140,13 @@ public class WidgetServiceImpl implements WidgetService {
             Resource renditionResource = imageResource.getChild("jcr:content/renditions");
             if (renditionResource != null) {
                 Iterator<Resource> iterator = renditionResource.listChildren();
-                Map map = new HashMap();
                 JSONObject jsonObject = new JSONObject();
                 while (iterator.hasNext()) {
                     Resource eachImageResource = iterator.next();
-                    jsonObject.put(eachImageResource.getName(), eachImageResource.getPath());
-                    jsonArray.put(jsonObject);
+                    ResourceResolver resourceResolver = imageResource.getResourceResolver();
+                    jsonObject.put(eachImageResource.getName(), AHMUtil.getExternalUrl(resourceResolver,resourceResolver.map(eachImageResource.getPath())));
                 }
+                jsonArray.put(jsonObject);
             }
         }
         return jsonArray;
