@@ -64,11 +64,19 @@ public class WidgetServlet extends SlingAllMethodsServlet {
         String[] suffixParam = id.split("/");
         UUID uid = null;
         String result = StringUtils.EMPTY;
-        if (suffixParam.length > 1) {
+        if (suffixParam.length == 2) {
             String renditionParam = suffixParam[1];
             uid = UUID.fromString(suffixParam[0]);
             try {
                 result = widgetService.GetOriginalRenditionById(uid, resolver, renditionParam);
+            } catch (Exception e) {
+                logger.error("Exception in the Wigetservlet while pulling the widget information {}", e);
+            }
+        }else if(suffixParam.length == 3){
+            String renditionParam = suffixParam[2];
+            uid = UUID.fromString(suffixParam[0]);
+            try {
+                result = widgetService.GetRenditionById(uid, resolver, renditionParam);
             } catch (Exception e) {
                 logger.error("Exception in the Wigetservlet while pulling the widget information {}", e);
             }

@@ -134,6 +134,26 @@ public class WidgetServiceImpl implements WidgetService {
         return null;
     }
 
+    @Override
+    public String GetRenditionById(UUID widgetId, ResourceResolver resourceResolver, String renditionParam) throws Exception {
+        String string = GetWidgetById(widgetId, resourceResolver);
+        if (StringUtils.isNotBlank(string)) {
+            JSONObject jsonObject = new JSONObject(string);
+            JSONArray imageJson = new JSONArray();
+            JSONArray renditionJson = new JSONArray();
+            JSONArray contentDetails = jsonObject.getJSONArray("ContentDetails");
+            for (int index = 0; index < contentDetails.length(); index++) {
+                JSONObject componentObject = contentDetails.getJSONObject(index);
+                String imagePath = componentObject.getString("ImagePath");
+                /*String externalizerConfigUrl = AHMUtil.getExternalUrl(resourceResolver, "/");
+                imagePath = imagePath.replace(externalizerConfigUrl, "/content/dam/");*/
+                componentObject.put("imageRenditions",imagePath+"/_jcr_content/"+renditionParam);
+            }
+            return jsonObject.toString();
+        }
+        return null;
+    }
+
     private JSONArray generateRenditionsArray(Resource imageResource) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         if (null != imageResource) {
